@@ -13,11 +13,6 @@ class CustomizedPath():
         # Logs initialized
         self._initialized_loggers = collections.defaultdict(bool)
 
-        # Datasets promises
-        self._train = None
-        self._test = None
-        self._sample = None
-
 # ------------------ UTILS ------------------
 
     def remove_prefix(input_string: str, prefix: str) -> str:

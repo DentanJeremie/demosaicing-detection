@@ -25,7 +25,3 @@ logger.addHandler(consoleHandler)
 # Silent unuseful log
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
-warnings.filterwarnings('ignore', message=r'This implementation of AdamW*')
-warnings.filterwarnings('ignore', message=r'nn.glob.global_sort_pool')
-from matplotlib import pyplot as plt
-plt.set_loglevel("warning")
