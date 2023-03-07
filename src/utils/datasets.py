@@ -107,4 +107,4 @@ class Dataset():
             if '.png' == item.suffix
         ])
 
-dataset = Dataset()
+no_noise_dataset = Dataset()

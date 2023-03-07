@@ -19,9 +19,10 @@ logger.addHandler(sum_fileHandler)
 
 consoleHandler = logging.StreamHandler(sys.stdout)
 consoleHandler.setFormatter(logFormatter)
-consoleHandler.setLevel(logging.DEBUG)
+consoleHandler.setLevel(logging.INFO)
 logger.addHandler(consoleHandler)
 
 # Silent unuseful log
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
+warnings.filterwarnings("ignore", message=r'"OpenImageIO" related API feature')

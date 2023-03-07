@@ -5,3 +5,4 @@ colour-science
 matplotlib
 imageio
 scipy
+tqdm

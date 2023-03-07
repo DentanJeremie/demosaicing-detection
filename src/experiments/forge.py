@@ -19,8 +19,7 @@ def forge(
     stop_position: t.Tuple[int, int] = (-1,-1),
     demosaicing_algo: str = 'bilinear',
     pattern: str = 'RGGB',
-    prior_jpeg_compression: bool = False,
-    **jpeg_kwargs,
+    jpeg_compression: float = None,
 ) -> np.ndarray:
     """Forges an image by introducing democaising artefacts in a given zone of the image.
     More specifically, the function performs a mosaicing of the image and then a democaising
@@ -35,7 +34,8 @@ def forge(
     to the bottom-right corner of the image, which is useful to forge the whole image.
     :param demosaicing_algo: A string identifying the demosaicing algo. Cf `forge.DEMOSAICING_ALGOS`
     :param pattern: A string identifying the pattern. Cf 'forge.PATTERNS`
-    :param prior_jpeg_compression: Whether or not to apply a compression prior to the forgery
+    :param jpeg_compression: If None, no prior JPEG compression is applied. 
+    Else, a compression of quality `jpeg_compression` is applied.
     :returns: The forged image
     """
     logger.debug(f'Forging an image with algorithm {demosaicing_algo} and pattern {pattern}')
@@ -52,8 +52,8 @@ def forge(
     assert pattern in PATERNS, 'Invalid pattern name'
 
     # JPEG compression
-    if prior_jpeg_compression:
-        image = jpeg_compression(image, **jpeg_kwargs)
+    if jpeg_compression is not None:
+        image = get_jpeg_compression(image, quality=jpeg_compression)
 
     # Selecting area to force
     area_to_forge = image[start_position[0]:stop_position[0],start_position[1]:stop_position[1],:]
@@ -68,9 +68,10 @@ def forge(
 
     return result
 
-def jpeg_compression(
+def get_jpeg_compression(
     image: np.ndarray,
     quality: float = 0.97,
+    silent: bool = False,
 ) -> np.ndarray:
     """Performs a JPEG compression of the image."""
     logger.debug(f'JPEG compression with quality={quality}')
