@@ -5,24 +5,11 @@ import imageio
 import numpy as np
 from colour_demosaicing import (
     mosaicing_CFA_Bayer,
-    demosaicing_CFA_Bayer_bilinear,
-    demosaicing_CFA_Bayer_Malvar2004,
-    demosaicing_CFA_Bayer_Menon2007,
 )
 
+from src.utils.constants import *
 from src.utils.logs import logger
 
-DEMOSAICING_ALGOS = {
-    'bilinear': demosaicing_CFA_Bayer_bilinear,
-    'malvar': demosaicing_CFA_Bayer_Malvar2004,
-    'menon': demosaicing_CFA_Bayer_Menon2007,
-}
-PATERNS = [
-    'RGGB',
-    'BGGR',
-    'GRBG',
-    'GBRG',
-]
 COMPRESSION_FORMAT = 'jpeg'
 COLOUR_RANGE = 255
 
@@ -102,12 +89,10 @@ def jpeg_compression(
         np.float32,
     ) / COLOUR_RANGE
 
-def get_forgery_config() -> t.List[t.Tuple[str, str]]:
+def get_forgery_configs() -> t.List[t.Tuple[str, str]]:
     """Returns the list of configuration for the forgery, as a list of tupples (algo, pattern)"""
     result = list()
     for algo in DEMOSAICING_ALGOS:
         for pattern in PATERNS:
             result.append((algo, pattern))
     return result
-
-
