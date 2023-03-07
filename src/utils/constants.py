@@ -19,3 +19,8 @@ DIAGONALS = {
     0:['RGGB','BGGR'],
     1:['GRBG','GBRG'],
 }
+ALGO_PATTERN_CONFIG = [
+    (algo, pattern)
+    for algo in DEMOSAICING_ALGOS
+    for pattern in PATERNS
+]

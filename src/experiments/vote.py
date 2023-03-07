@@ -2,7 +2,7 @@ import numpy as np
 import skimage.measure
 
 from src.utils.constants import *
-from src.detect.forge import forge, get_forgery_configs
+from src.experiments.forge import forge
 
 BLOCK_SHAPE = (2,2)
 
@@ -11,7 +11,7 @@ def get_block_votes(
     image: np.ndarray,
 ) -> np.ndarray:
     """Computes the vote of each 2x2 block. The vote is an int that represents
-    the index of the configuration (algo, pattern) in `forge.get_forgery_configs()`
+    the index of the configuration (algo, pattern) in `constants.ALGO_PATTERN_CONFIG`
     that led to the minimal residual after the second democaising.
 
     :param image: A ndarray representing the input image, shape (height, width)
@@ -20,7 +20,7 @@ def get_block_votes(
     """
     # Iterating over the configurations algo, pattern
     stacked_residuals = []
-    for algo, pattern in get_forgery_configs():
+    for algo, pattern in ALGO_PATTERN_CONFIG:
         forgery = forge(image, demosaicing_algo=algo, pattern=pattern, inplace=False)
         residual = np.abs(image - forgery)
         residual_one_channel = np.mean(residual, axis=2)
@@ -57,7 +57,7 @@ def get_block_votes_on_algo(
     votes = get_block_votes(image)
     height, width = votes.shape
     votes_per_algo = np.zeros((height, width, num_algos))
-    for index, (algo, _) in enumerate(get_forgery_configs()):
+    for index, (algo, _) in enumerate(ALGO_PATTERN_CONFIG):
         votes_per_algo[algo_to_index[algo]] += (votes == index)
 
     return np.argmax(votes_per_algo, axis=2)
@@ -84,7 +84,7 @@ def get_block_votes_on_pattern(
     votes = get_block_votes(image)
     height, width = votes.shape
     votes_per_pattern = np.zeros((height, width, num_pattern))
-    for index, (_, pattern) in enumerate(get_forgery_configs()):
+    for index, (_, pattern) in enumerate(ALGO_PATTERN_CONFIG):
         votes_per_pattern[pattern_to_index[pattern]] += (votes == index)
 
     return np.argmax(votes_per_pattern, axis=2)
@@ -112,7 +112,7 @@ def get_block_votes_on_diag(
     votes = get_block_votes(image)
     height, width = votes.shape
     votes_per_diag = np.zeros((height, width, num_diag))
-    for index, (_, pattern) in enumerate(get_forgery_configs()):
+    for index, (_, pattern) in enumerate(ALGO_PATTERN_CONFIG):
         votes_per_diag[pattern_to_diag_index[pattern]] += (votes == index)
 
     return np.argmax(votes_per_diag, axis=2)

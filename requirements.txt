@@ -1,9 +1,7 @@
-imageio
 numpy
 requests
-tqdm
 colour-demosaicing
 colour-science
 matplotlib
-scikit-image
 imageio
+scipy

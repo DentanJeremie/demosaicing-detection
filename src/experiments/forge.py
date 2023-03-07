@@ -15,8 +15,8 @@ COLOUR_RANGE = 255
 
 def forge(
     image: np.ndarray,
-    start_position: t.Tuple[int] = (0,0),
-    stop_position: t.Tuple[int] = (-1,-1),
+    start_position: t.Tuple[int, int] = (0,0),
+    stop_position: t.Tuple[int, int] = (-1,-1),
     demosaicing_algo: str = 'bilinear',
     pattern: str = 'RGGB',
     prior_jpeg_compression: bool = False,
@@ -88,11 +88,3 @@ def jpeg_compression(
         imageio.imread(compression_buffer, format=COMPRESSION_FORMAT),
         np.float32,
     ) / COLOUR_RANGE
-
-def get_forgery_configs() -> t.List[t.Tuple[str, str]]:
-    """Returns the list of configuration for the forgery, as a list of tupples (algo, pattern)"""
-    result = list()
-    for algo in DEMOSAICING_ALGOS:
-        for pattern in PATERNS:
-            result.append((algo, pattern))
-    return result
