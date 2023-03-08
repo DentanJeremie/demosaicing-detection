@@ -5,7 +5,7 @@ from scipy.stats import binom
 
 from src.utils.constants import *
 
-DEFAULT_NFA_THRESHOLD = 10e-3
+DEFAULT_NFA_THRESHOLD = 10e-8
 
 
 def detect_config(

@@ -32,8 +32,13 @@ def get_block_votes(
         stacked_residuals.append(residual_one_channel_by_block)
 
     # Stacking and taking argmin of residual
+    # We need random tie breaking for the argmax
     stacked_residuals = np.array(stacked_residuals)
-    return np.argmin(stacked_residuals, axis=0)
+    return np.argmin(
+        1 - np.random.random(stacked_residuals.shape)
+        * (stacked_residuals == np.min(stacked_residuals, axis=0)[np.newaxis, :, :]),
+        axis=0
+    )
 
 
 def get_block_votes_on_algo(

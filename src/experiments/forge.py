@@ -33,8 +33,10 @@ def forge(
     :param stop_position: The second tupple to define the forgery zone. If (-1, -1), it will be modified to correspond
     to the bottom-right corner of the image, which is useful to forge the whole image.
     :param demosaicing_algo: A string identifying the demosaicing algo. Cf `forge.DEMOSAICING_ALGOS`
+    If None, no demosaicing is done.
     :param pattern: A string identifying the pattern. Cf 'forge.PATTERNS`
-    :param jpeg_compression: If None, no prior JPEG compression is applied. 
+    If None, no demosaicing is done.
+    :param jpeg_compression: If None, no prior JPEG compression is applied after the forgery. 
     Else, a compression of quality `jpeg_compression` is applied.
     :returns: The forged image
     """
@@ -48,30 +50,36 @@ def forge(
     assert channel == 3, 'Cannot forge an image that is not RGB-encoded.'
     assert stop_position[0] >=  start_position[0], 'Stop index < start index for axis 0'
     assert stop_position[1] >=  start_position[1], 'Stop index < start index for axis 1'
-    assert demosaicing_algo in DEMOSAICING_ALGOS, 'Invalid demosaicing algo name'
-    assert pattern in PATERNS, 'Invalid pattern name'
-
-    # JPEG compression
-    if jpeg_compression is not None:
-        image = get_jpeg_compression(image, quality=jpeg_compression)
+    assert demosaicing_algo in [None] + list(DEMOSAICING_ALGOS), 'Invalid demosaicing algo name'
+    assert pattern in [None] + list(PATERNS), 'Invalid pattern name'
 
     # Selecting area to force
     area_to_forge = image[start_position[0]:stop_position[0],start_position[1]:stop_position[1],:]
 
     # Forging
-    cfa = mosaicing_CFA_Bayer(area_to_forge, pattern=pattern)
-    forged = DEMOSAICING_ALGOS[demosaicing_algo](cfa, pattern=pattern)
+    if demosaicing_algo is not None and pattern is not None:
+        cfa = mosaicing_CFA_Bayer(area_to_forge, pattern=pattern)
+        forged = DEMOSAICING_ALGOS[demosaicing_algo](cfa, pattern=pattern)
+    else:
+        forged = area_to_forge
 
     # Edditing the image
     result = image.copy()
     result[start_position[0]:stop_position[0],start_position[1]:stop_position[1],:] = forged
 
+    # Clipping
+    result = np.clip(result, a_min = 0.0, a_max = 1.0)
+
+    # JPEG compression
+    if jpeg_compression is not None:
+        result = get_jpeg_compression(result, quality=jpeg_compression)
+
     return result
+
 
 def get_jpeg_compression(
     image: np.ndarray,
-    quality: float = 0.97,
-    silent: bool = False,
+    quality: float = 97,
 ) -> np.ndarray:
     """Performs a JPEG compression of the image."""
     logger.debug(f'JPEG compression with quality={quality}')

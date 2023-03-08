@@ -6,3 +6,4 @@ matplotlib
 imageio
 scipy
 tqdm
+notebook
