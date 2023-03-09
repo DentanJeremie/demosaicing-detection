@@ -1,2 +1,5 @@
 *
+!*_detection_*.csv
+!*_detection_*.png
+!false_detection_summary.txt
 !.gitignore
