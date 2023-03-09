@@ -7,3 +7,4 @@ imageio
 scipy
 tqdm
 notebook
+pandas

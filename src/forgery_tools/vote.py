@@ -2,7 +2,7 @@ import numpy as np
 import skimage.measure
 
 from src.utils.constants import *
-from src.experiments.forge import forge
+from src.forgery_tools.forge import forge
 
 BLOCK_SHAPE = (2,2)
 

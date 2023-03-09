@@ -3,6 +3,8 @@ from colour_demosaicing import (
     demosaicing_CFA_Bayer_Malvar2004,
     demosaicing_CFA_Bayer_Menon2007,
 )
+FORGERY_WINDOWS_SIZE = 200
+FORGERY_DETECTION_WINDOWS_SIZE = 100
 JPEG_COMPRESSION_FACTORS = [None, 95, 90]
 DEMOSAICING_ALGOS = {
     'bilinear': demosaicing_CFA_Bayer_bilinear,
