@@ -101,7 +101,11 @@ def get_jpeg_compression(
     ) / COLOUR_RANGE
 
 
-def generate_forged_image(jpeg_compression: float = None, verbose:bool = False) -> np.ndarray:
+def generate_forged_image(
+        jpeg_compression: float = None,
+        force_different_pattern: bool = False,
+        verbose:bool = False
+) -> np.ndarray:
     """
     Generates an image presenting a forgery, i.e. an area in the image that is not demosaiced with the same
     algorithm as the rest of the image.
@@ -114,6 +118,7 @@ def generate_forged_image(jpeg_compression: float = None, verbose:bool = False) 
 
     :param jpeg_compression: If None, no compression is done.
     Else, `jpeg_compression` should be the quality of the desired compression.
+    :param force_different_pattern: Whether or not to force the forged area to have a different pattern.
     :returns: The forged image.
     """
     # Sampling the image
@@ -122,11 +127,19 @@ def generate_forged_image(jpeg_compression: float = None, verbose:bool = False) 
     height, width, _ = image.shape
 
     # Sampling demosaicing configurations
-    config_index_0, config_index_1 = np.random.choice(range(len(ALGO_PATTERN_CONFIG)), 2, replace=False)
-    (
-        (global_algo, global_pattern),
-        (forgery_algo, forgery_pattern)
-    ) = ALGO_PATTERN_CONFIG[config_index_0], ALGO_PATTERN_CONFIG[config_index_1]
+    if not force_different_pattern:
+        config_index_0, config_index_1 = np.random.choice(range(len(ALGO_PATTERN_CONFIG)), 2, replace=False)
+        (
+            (global_algo, global_pattern),
+            (forgery_algo, forgery_pattern)
+        ) = ALGO_PATTERN_CONFIG[config_index_0], ALGO_PATTERN_CONFIG[config_index_1]
+    else:
+        algo_index_0, algo_index_1 = np.random.choice(range(len(DEMOSAICING_ALGOS)), 2, replace=True)
+        pattern_index_0, pattern_index_1 = np.random.choice(range(len(PATERNS)), 2, replace=False)
+        global_algo = list(DEMOSAICING_ALGOS)[algo_index_0]
+        forgery_algo = list(DEMOSAICING_ALGOS)[algo_index_1]
+        global_pattern = PATERNS[pattern_index_0]
+        forgery_pattern = PATERNS[pattern_index_1]
 
     # Sampling forgery zone
     start_position_0 = np.random.randint(0, height - FORGERY_WINDOWS_SIZE)

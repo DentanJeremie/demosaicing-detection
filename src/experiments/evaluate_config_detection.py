@@ -26,6 +26,7 @@ NUM_IMAGES = len(no_noise_dataset)
 INDEX_TO_ALGO = {item:key for key, item in list(ALGO_TO_INDEX.items()) + [(None, -1)]}
 INDEX_TO_PATTERN = {item:key for key, item in list(PATTERN_TO_INDEX.items()) + [(None, -1)]}
 
+
 def do_evaluation_config_detection(
     nfa_threshold_list: t.List[float],
 ):
@@ -232,6 +233,7 @@ def do_evaluation_config_detection(
 
 
 if __name__ == '__main__':
+    np.random.seed(42)
     summary = do_evaluation_config_detection([1, 1e-2, 1e-8])
 
     full_sum = [

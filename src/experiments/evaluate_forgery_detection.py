@@ -10,7 +10,7 @@ from src.utils.logs import logger
 from src.utils.pathtools import project
 from src.forgery_tools.forge import generate_forged_image, generate_unforged_image
 from src.forgery_tools.detect import detect_forgery
-from src.forgery_tools.vote import get_block_votes
+from src.forgery_tools.vote import get_block_votes, get_block_votes_on_pattern
 
 NUM_IMAGE_TESTED = 1000
 NUM_CONFIG = 2
@@ -18,8 +18,16 @@ NUM_CONFIG = 2
 
 def evaluate_forgery_detection(
     nfa_threshold_list: t.List[float],
+    detect_on_pattern: bool,
 ):
+    """Evaluates the forgery detection pipeline.
+
+    :param nfa_threshold_list: The list of NFA threshold to evaluate.
+    :param detect_on_pattern: If True, the detection will be on the patterns only.
+    Else, it's on the full (algo, pattern) config.
+    """
     # Init
+    logger.info(f'Evaluating the forgery detection pipeline on NFA = {nfa_threshold_list}, with detect_on_pattern={detect_on_pattern}')
     num_nfa = len(nfa_threshold_list)
 
     # Generating the datasets
@@ -30,7 +38,7 @@ def evaluate_forgery_detection(
     for image_count in tqdm(range(NUM_IMAGE_TESTED)):
         for jpeg_count, jpeg_compression in enumerate(JPEG_COMPRESSION_FACTORS):
             forged_datasets[jpeg_count].append(
-                generate_forged_image(jpeg_compression)
+                generate_forged_image(jpeg_compression, force_different_pattern=detect_on_pattern)
             )
 
     logger.info(f'Generating 3x{NUM_IMAGE_TESTED} unforged images with various JPEG compression factors')
@@ -67,9 +75,11 @@ def evaluate_forgery_detection(
         logger.info(f'Processing the forged images with JPEG={JPEG_COMPRESSION_FACTORS[jpeg_index]}')
         for image in tqdm(sub_forged_dataset):
             votes = get_block_votes(image)
+            if detect_on_pattern:
+                votes = get_block_votes_on_pattern(votes)
             is_forged, log_nfa = detect_forgery(
                 votes=votes,
-                num_configs=len(ALGO_PATTERN_CONFIG),
+                num_configs=len(ALGO_PATTERN_CONFIG) if not detect_on_pattern else len(PATERNS),
                 windows_size=FORGERY_DETECTION_WINDOWS_SIZE,
                 nfa_threshold=None,
             )
@@ -162,7 +172,7 @@ def evaluate_forgery_detection(
         plt.ylabel("Proportions of detections")
         plt.title(f"Detection with NFA threshold = {nfa_threshold}\n[Left, Middle, Right] = [None, JPEG95, JPEG90]")
         plt.legend()
-        plt.savefig(project.output / f'forgery_detection_nfa_{nfa_threshold}.png')
+        plt.savefig(project.output / f'forgery_detection_nfa_{nfa_threshold}_pattern_{detect_on_pattern}.png')
         plt.close()
 
         # Saving detections counts
@@ -179,10 +189,10 @@ def evaluate_forgery_detection(
         pd.DataFrame(
             data,
             columns = ['config_jpeg', 'True detect', 'No detect', 'False detect']
-        ).to_csv(project.output / f'forgery_detection_nfa_{nfa_threshold}.csv', index=False)
+        ).to_csv(project.output / f'forgery_detection_nfa_{nfa_threshold}_pattern_{detect_on_pattern}.csv', index=False)
 
 if __name__ == '__main__':
-    evaluate_forgery_detection([1, 1e-2, 1e-8])
-
-
-
+    np.random.seed(42)
+    #evaluate_forgery_detection([1, 1e-2, 1e-8], detect_on_pattern=True)
+    np.random.seed(42)
+    evaluate_forgery_detection([1, 1e-2, 1e-8], detect_on_pattern=False)

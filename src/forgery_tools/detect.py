@@ -4,6 +4,7 @@ import numpy as np
 from scipy.stats import binom
 
 from src.utils.constants import *
+from src.utils.logs import logger
 
 
 def detect_config(
@@ -75,6 +76,7 @@ def detect_forgery(
     num_configs: int,
     windows_size: int,
     nfa_threshold: float = None,
+    verbose: bool = False,
 ) -> int:
     """Detects if there is a demosaicing forgery with respect to a NFA threshold.
     The votes can be eighter for the full config (algo, pattern), or on the algo only,
@@ -120,6 +122,9 @@ def detect_forgery(
         )
         if local_detection != global_detection and local_log_nfa > best_window_log_nfa:
             best_window_log_nfa = local_log_nfa
+            if verbose:
+                logger.info(f'Start position of the new best windows: {start_position}')
+                logger.info(f'Stop position of the new best windows: {stop_position}')
 
     # Result
     best_window_log_nfa = -np.log10(num_windows*(num_configs - 1)/num_configs) + best_window_log_nfa

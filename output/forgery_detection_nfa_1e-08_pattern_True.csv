@@ -1,0 +1,7 @@
+config_jpeg,True detect,No detect,False detect
+Forged_None,785.0,215.0,0.0
+Forged_95,316.0,684.0,0.0
+Forged_90,179.0,821.0,0.0
+Unforged_None,1000.0,0.0,0.0
+Unforged_95,391.0,0.0,609.0
+Unforged_90,267.0,0.0,733.0
