@@ -95,10 +95,16 @@ def get_jpeg_compression(
     )
 
     # Output
-    return np.asarray(
+    result = np.asarray(
         imageio.imread(compression_buffer, format=COMPRESSION_FORMAT),
         np.float32,
     ) / COLOUR_RANGE
+
+    # Moves colour axis if needed, depending on the version 
+    if result.shape[0] == 3: # colour channel first
+        result = np.moveaxis(result, 0, 2)
+
+    return result
 
 
 def generate_forged_image(
