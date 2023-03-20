@@ -4,7 +4,7 @@ colour-demosaicing
 colour-science
 matplotlib
 scikit-image
-imageio
+imageio==2.26.1
 scipy
 tqdm
 pandas
