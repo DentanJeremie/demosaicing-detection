@@ -11,3 +11,9 @@ The code of this repository is expected to run in **Python 3.9** with the depend
 pip install -r requirements.txt
 export PYTHONPATH=$(pwd)
 ```
+
+Moreover, if you want to execute locally the notebooks in the `\doc` folder, you should have `ipykernel` installed, which is not declared in `requirements.txt` for technical reasons linked to the possibility to execute the notebooks on Google Colab. Thus, you should run the following before running the notebooks:
+
+```bash
+pip install notebook==6.5.3
+```
