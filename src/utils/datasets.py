@@ -1,10 +1,12 @@
 """
 no_noise_images Dataset
+dall_e_images Dataset
 ==============================
 
 References
 ----------
 -   :cite:`colom`: http://mcolom.info/pages/no_noise_images/
+-   :cite:`dentan`: https://gist.github.com/DentanJeremie/21bfd925c5234afd15d854135b569bec
 """
 
 from pathlib import Path
@@ -19,16 +21,28 @@ import requests
 from src.utils.pathtools import project
 from src.utils.logs import logger
 
-URL_DOWNLOAD = 'https://mcolom.perso.math.cnrs.fr/download/no_noise_images/no_noise_images.zip'
-ZIP_PATH = project.data / 'no_noise_images.zip'
-IMAGES_DIR = project.data / 'no_noise_images'
-
 
 class Dataset():
 
-    def __init__(self):
-        logger.info(f'Initiating a dataset over the no_noise_images dataset')
-        logger.info('More info at http://mcolom.info/pages/no_noise_images/')
+    def __init__(
+        self,
+        name: str,
+        url_download: str,
+        info_url: str,
+        zip_path: Path,
+        images_dir: Path,
+        unzip_in_images_dir_parent: bool = False,
+    ):
+        # Attributes
+        self.name = name
+        self.url_download = url_download
+        self.info_url = info_url
+        self.zip_path = zip_path
+        self.images_dir = images_dir
+        self.unzip_in_images_dir_parent = unzip_in_images_dir_parent
+
+        logger.info(f'Initiating a dataset over the {self.name} dataset')
+        logger.info(f'More info at {self.info_url}')
         self._images: t.List[Path] = None
 
         # Iterator
@@ -69,13 +83,13 @@ class Dataset():
 
     def _get_images(self):
         """Checks that the datasets are correctly downloaded"""
-        if not IMAGES_DIR.exists() or len(list(IMAGES_DIR.iterdir())) <= 2:
-            logger.info('no_noise_images dataset not found')
+        if not self.images_dir.exists() or len(list(self.images_dir.iterdir())) <= 2:
+            logger.info(f'{self.name} dataset not found')
 
-            if not ZIP_PATH.exists():
-                logger.info('no_noise_images dataset zip not found, downloading it...')
-                response = requests.get(URL_DOWNLOAD, stream=True)
-                with ZIP_PATH.open('wb') as f:
+            if not self.zip_path.exists():
+                logger.info(f'{self.name} dataset zip not found, downloading it...')
+                response = requests.get(self.url_download, stream=True)
+                with self.zip_path.open('wb') as f:
                     dl = 0
                     total_length = response.headers.get('content-length')
                     total_length = int(total_length)
@@ -88,23 +102,43 @@ class Dataset():
 
                 sys.stdout.write('\n')
 
-            logger.info('Extracting no_noise_images...')
+            logger.info('Extracting the dataset...')
             try:
-                with zipfile.ZipFile(ZIP_PATH) as zf:
-                    zf.extractall(project.mkdir_if_not_exists(IMAGES_DIR))
+                with zipfile.ZipFile(self.zip_path) as zf:
+                    if self.unzip_in_images_dir_parent:
+                        dst = project.mkdir_if_not_exists(self.images_dir).parent
+                    else:
+                        dst = project.mkdir_if_not_exists(self.images_dir)
+                    zf.extractall(dst)
             except zipfile.BadZipFile:
                 logger.info(f'Found corrupted .zip file, deleting it and trying again...')
-                ZIP_PATH.unlink()
+                self.zip_path.unlink()
                 self._get_images()
 
         else:
-            logger.info(f'no_noise_images found at {project.as_relative(IMAGES_DIR)}')
+            logger.info(f'dataset found at {project.as_relative(self.images_dir)}')
 
         # Images list
         self._images = sorted([
             item
-            for item in IMAGES_DIR.iterdir()
+            for item in self.images_dir.iterdir()
             if '.png' == item.suffix
         ])
 
-no_noise_dataset = Dataset()
+
+no_noise_dataset = Dataset(
+    name='no_noise_dataset',
+    url_download='https://mcolom.perso.math.cnrs.fr/download/no_noise_images/no_noise_images.zip',
+    info_url='https://mcolom.perso.math.cnrs.fr/pages/no_noise_images/',
+    zip_path=project.data / 'no_noise_images.zip',
+    images_dir=project.data / 'no_noise_images',
+)
+
+dall_e_dataset = Dataset(
+    name='dall_e_images',
+    url_download='https://drive.google.com/uc?export=download&id=1AeVdtoffp0Sgobv-IvgyWmRJsF1oQAX5',
+    info_url='https://gist.github.com/DentanJeremie/21bfd925c5234afd15d854135b569bec',
+    zip_path=project.data / 'dall_e_images.zip',
+    images_dir=project.data / 'dall_e_images',
+    unzip_in_images_dir_parent=True,
+)

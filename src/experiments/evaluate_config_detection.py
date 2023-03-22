@@ -6,7 +6,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from src.utils.constants import *
-from src.utils.datasets import no_noise_dataset
+from src.utils.datasets import no_noise_dataset, dall_e_dataset
 from src.utils.logs import logger
 from src.utils.pathtools import project
 from src.forgery_tools.detect import detect_config
@@ -17,12 +17,16 @@ from src.forgery_tools.vote import (
     get_block_votes_on_diag,
     get_block_votes_on_pattern,
 )
+
+USE_DALL_E = True
+dataset = no_noise_dataset if not USE_DALL_E else dall_e_dataset
+
 NUM_NOFORGE = 1
 NUM_ALGO = len(DEMOSAICING_ALGOS)
 NUM_PATTERN = len(PATERNS)
 NUM_DIAG = len(DIAGONALS)
 NUM_CONFIG = NUM_NOFORGE + NUM_ALGO + NUM_PATTERN + NUM_DIAG
-NUM_IMAGES = len(no_noise_dataset)
+NUM_IMAGES = len(dataset)
 INDEX_TO_ALGO = {item:key for key, item in list(ALGO_TO_INDEX.items()) + [(None, -1)]}
 INDEX_TO_PATTERN = {item:key for key, item in list(PATTERN_TO_INDEX.items()) + [(None, -1)]}
 
@@ -64,7 +68,7 @@ def do_evaluation_config_detection(
     summary_false_detections = dict()
 
     # Filling the variables
-    for image_index, original_image in enumerate(tqdm(no_noise_dataset)):
+    for image_index, original_image in enumerate(tqdm(dataset)):
         for algo, pattern in [(None, None)] + ALGO_PATTERN_CONFIG:
             for jpeg_index, jpeg_compression in enumerate(JPEG_COMPRESSION_FACTORS):
                 # Forging the image to impose the True configuration
@@ -202,9 +206,9 @@ def do_evaluation_config_detection(
         plt.ylim(0, 1.35)
         plt.xlabel("Groups")
         plt.ylabel("Proportions of detections")
-        plt.title(f"Detection with NFA threshold = {nfa_threshold}\n[Left, Middle, Right] = [None, JPEG95, JPEG90]")
+        plt.title(f"Detection with NFA threshold = {nfa_threshold}\n[Left, Middle, Right] = [None, JPEG95, JPEG90]\nDataset={dataset.name}")
         plt.legend()
-        plt.savefig(project.output / f'config_detection_nfa_{nfa_threshold}.png')
+        plt.savefig(project.output / f'config_detection_nfa_{nfa_threshold}_{dataset.name}.png')
         plt.close()
 
         # Saving detections counts
@@ -227,7 +231,7 @@ def do_evaluation_config_detection(
         pd.DataFrame(
             data,
             columns = ['config_jpeg', 'True detect', 'No detect', 'False detect']
-        ).to_csv(project.output / f'config_detection_nfa_{nfa_threshold}.csv', index=False)
+        ).to_csv(project.output / f'config_detection_nfa_{nfa_threshold}_{dataset.name}.csv', index=False)
 
     return summary_false_detections
 
@@ -241,5 +245,5 @@ if __name__ == '__main__':
         for _, item in summary.items()
     ]
 
-    with (project.output / f'false_detection_summary.txt').open('w') as f:
+    with (project.output / f'false_detection_summary_{dataset.name}.txt').open('w') as f:
         f.write('\n'.join(full_sum))
