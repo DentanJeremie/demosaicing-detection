@@ -50,6 +50,20 @@ python src/experiments/evaluate_forgery_detection.py
 
 This will produce some results in the `output` directory, as well as logs in the `logs` directory.
 
+## Citation
+
+When using this repository, please cite the paper it implements:
+
+```
+@techreport{dentan_towards_2023,
+	title = {Towards a reliable detection of forgeries based on demosaicing},
+	author = {Dentan, Jérémie},
+	month = mar,
+	year = {2023},
+	doi = {10.13140/RG.2.2.17584.02568},
+}
+```
+
 ## License and Disclaimer
 
 You may use this software under the Apache 2.0 License. See LICENSE.
