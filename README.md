@@ -10,15 +10,15 @@
 
 This repository is the implementation of a review of the paper "Demosaicing to Detect Demosaicing and Image Forgeries" written by Quentin Bammey, Rafael Grompone von Gioi, and Jean-Michel Morel, which proposes a demosaicing-based forgery detection method.
 
-The report by the author: [http://dx.doi.org/10.13140/RG.2.2.17584.02568](http://dx.doi.org/10.13140/RG.2.2.17584.02568)
-The original paper, by Quentin Bammey, Rafael Grompone von Gioi, Jean-Michel Morel: [https://doi.org/10.1109/WIFS55849.2022.9975454](https://doi.org/10.1109/WIFS55849.2022.9975454)
+- The report by the author: [http://dx.doi.org/10.13140/RG.2.2.17584.02568](http://dx.doi.org/10.13140/RG.2.2.17584.02568)
+- The original paper, by Quentin Bammey, Rafael Grompone von Gioi, Jean-Michel Morel: [https://doi.org/10.1109/WIFS55849.2022.9975454](https://doi.org/10.1109/WIFS55849.2022.9975454)
 
 ## Overview
 
 For an easy demonstration of the experiments made by the author for this review, we invite you to check out the two following repositories:
 
--  For experiment 1, about the detection of demosaicing configuration: [doc/configuration_detection_demonstration.ipynb](https://github.com/DentanJeremie/demosaicing-detection/blob/main/doc/configuration_detection_demonstration.ipynb)
--  For experiment 2, about the detection of the image forgeries: [doc/forgery_detection_demonstration.ipynb](https://github.com/DentanJeremie/demosaicing-detection/blob/main/doc/forgery_detection_demonstration.ipynb)
+- For experiment 1, about the detection of demosaicing configuration: [doc/configuration_detection_demonstration.ipynb](https://github.com/DentanJeremie/demosaicing-detection/blob/main/doc/configuration_detection_demonstration.ipynb)
+- For experiment 2, about the detection of the image forgeries: [doc/forgery_detection_demonstration.ipynb](https://github.com/DentanJeremie/demosaicing-detection/blob/main/doc/forgery_detection_demonstration.ipynb)
 
 ## Run the full experiments
 
@@ -54,7 +54,7 @@ This will produce some results in the `output` directory, as well as logs in the
 
 When using this repository, please cite the paper it implements:
 
-```
+```bibtex
 @techreport{dentan_towards_2023,
 	title = {Towards a reliable detection of forgeries based on demosaicing},
 	author = {Dentan, Jérémie},
